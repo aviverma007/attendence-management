@@ -579,23 +579,39 @@ const Dashboard = () => {
   }
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
+    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} transition-colors`}>
+      {/* Background Images */}
+      <div className="fixed inset-0 z-0">
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10"
+          style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDN8MHwxfHNlYXJjaHwyfHxjb3Jwb3JhdGUlMjBvZmZpY2V8ZW58MHx8fHwxNzUyNTcyMjE1fDA&ixlib=rb-4.1.0&q=85')`
+          }}
+        />
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-5"
+          style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1718220268527-4477fd170775?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzd8MHwxfHNlYXJjaHwyfHxtb2Rlcm4lMjB3b3JrcGxhY2V8ZW58MHx8fHwxNzUyNTcyMjIzfDA&ixlib=rb-4.1.0&q=85')`
+          }}
+        />
+      </div>
+
       {/* Header */}
-      <header className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-md`}>
+      <header className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm relative z-10`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <h1 className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center space-x-4">
+              <div className={`w-10 h-10 ${isDarkMode ? 'bg-blue-600' : 'bg-blue-500'} rounded-lg flex items-center justify-center`}>
+                <ChartBarIcon className="h-6 w-6 text-white" />
+              </div>
+              <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                 Smartworld Developers
               </h1>
-              <span className="ml-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm">
-                Attendance Management System
-              </span>
             </div>
             <div className="flex items-center space-x-4">
               <button
                 onClick={toggleTheme}
-                className={`p-2 rounded-lg ${isDarkMode ? 'bg-gray-700 text-yellow-400' : 'bg-gray-200 text-gray-700'} hover:bg-opacity-80 transition-colors`}
+                className={`p-2 rounded-lg ${isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'} hover:bg-opacity-80 transition-colors`}
               >
                 {isDarkMode ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
               </button>
@@ -622,7 +638,7 @@ const Dashboard = () => {
       </header>
 
       {/* Navigation */}
-      <nav className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
+      <nav className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm relative z-10`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-8">
             <button
@@ -680,7 +696,7 @@ const Dashboard = () => {
       </nav>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         {currentView === 'dashboard' && (
           <>
             {/* Attendance Overview */}
