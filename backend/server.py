@@ -429,6 +429,27 @@ async def init_sample_data():
 async def root():
     return {"message": "Smartworld Developers Attendance System API"}
 
+@api_router.get("/health")
+async def health_check():
+    """Health check endpoint for monitoring"""
+    try:
+        # Test database connection
+        await db.command("ping")
+        return {
+            "status": "healthy",
+            "timestamp": datetime.utcnow().isoformat(),
+            "database": "connected",
+            "service": "Smartworld Developers Attendance System"
+        }
+    except Exception as e:
+        return {
+            "status": "unhealthy",
+            "timestamp": datetime.utcnow().isoformat(),
+            "database": "disconnected",
+            "error": str(e),
+            "service": "Smartworld Developers Attendance System"
+        }
+
 # Authentication endpoints
 @api_router.post("/login", response_model=Token)
 async def login(user_credentials: UserLogin):
