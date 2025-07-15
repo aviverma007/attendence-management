@@ -36,7 +36,7 @@ db = client[os.environ['DB_NAME']]
 # JWT Configuration
 SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'smartworld-secret-key-2024')
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 1440  # 24 hours
+ACCESS_TOKEN_EXPIRE_MINUTES = 60  # 1 hour
 
 # Security
 security = HTTPBearer()
