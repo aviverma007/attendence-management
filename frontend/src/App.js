@@ -67,6 +67,10 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [isLoading, setIsLoading] = useState(true);
+  const [logoutTimer, setLogoutTimer] = useState(null);
+
+  // Auto logout after 1 hour (3600000 ms)
+  const AUTO_LOGOUT_TIME = 60 * 60 * 1000; // 1 hour in milliseconds
 
   // Set axios default headers
   useEffect(() => {
@@ -77,6 +81,28 @@ const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
+  // Setup logout timer
+  const setupLogoutTimer = () => {
+    if (logoutTimer) {
+      clearTimeout(logoutTimer);
+    }
+    
+    const timer = setTimeout(() => {
+      logout();
+      alert('Session expired. Please login again.');
+    }, AUTO_LOGOUT_TIME);
+    
+    setLogoutTimer(timer);
+  };
+
+  // Clear logout timer
+  const clearLogoutTimer = () => {
+    if (logoutTimer) {
+      clearTimeout(logoutTimer);
+      setLogoutTimer(null);
+    }
+  };
+
   // Check if user is logged in on app start
   useEffect(() => {
     const checkAuth = async () => {
@@ -84,6 +110,7 @@ const AuthProvider = ({ children }) => {
         try {
           const response = await axios.get(`${API}/me`);
           setUser(response.data);
+          setupLogoutTimer(); // Start the logout timer
         } catch (error) {
           localStorage.removeItem('token');
           setToken(null);
@@ -93,7 +120,32 @@ const AuthProvider = ({ children }) => {
     };
 
     checkAuth();
+    
+    // Cleanup timer on unmount
+    return () => clearLogoutTimer();
   }, [token]);
+
+  // Reset timer on user activity
+  useEffect(() => {
+    if (token && user) {
+      const resetTimer = () => {
+        clearLogoutTimer();
+        setupLogoutTimer();
+      };
+
+      // Activity event listeners
+      const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+      events.forEach(event => {
+        document.addEventListener(event, resetTimer, true);
+      });
+
+      return () => {
+        events.forEach(event => {
+          document.removeEventListener(event, resetTimer, true);
+        });
+      };
+    }
+  }, [token, user]);
 
   const login = async (credentials) => {
     try {
@@ -103,6 +155,7 @@ const AuthProvider = ({ children }) => {
       setToken(access_token);
       setUser(userData);
       localStorage.setItem('token', access_token);
+      setupLogoutTimer(); // Start the logout timer after successful login
       
       return { success: true };
     } catch (error) {
@@ -114,10 +167,12 @@ const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    clearLogoutTimer(); // Clear the logout timer
     setToken(null);
     setUser(null);
     localStorage.removeItem('token');
     delete axios.defaults.headers.common['Authorization'];
+  };
   };
 
   const value = {
