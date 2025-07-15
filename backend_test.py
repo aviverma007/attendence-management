@@ -2,12 +2,15 @@
 """
 Backend API Testing for Smartworld Developers Attendance Management System
 Tests all core API endpoints for functionality and data integrity
+Updated to test new features: 1-hour JWT expiration, health endpoint, and production config
 """
 
 import requests
 import json
 from datetime import date, datetime
 import sys
+import jwt
+import time
 
 # Backend URL from environment
 BACKEND_URL = "https://0e8cfd2b-3354-4f01-bec6-b67c2e027f54.preview.emergentagent.com/api"
