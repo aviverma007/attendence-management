@@ -455,7 +455,8 @@ class AttendanceSystemTester:
         except Exception as e:
             self.log_test("JWT Token Expiration", False, f"Error testing token expiration: {str(e)}")
             return False
-        """Test GET /api/me - Get current user info"""
+    
+    def test_get_current_user_info(self):
         try:
             response = self.session.get(f"{self.base_url}/me")
             if response.status_code == 200:
