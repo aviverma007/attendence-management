@@ -838,14 +838,6 @@ async def get_leave_requests(current_user: dict = Depends(get_current_user)):
 # Include the router in the main app
 app.include_router(api_router)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -856,7 +848,19 @@ logger = logging.getLogger(__name__)
 @app.on_event("startup")
 async def startup_event():
     logger.info("Starting up Smartworld Developers Attendance System")
+    # Initialize sample data on startup
+    await init_sample_data()
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
+
+# Health check endpoint
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "timestamp": datetime.utcnow().isoformat()}
+
+# Main execution for production
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=PORT)
