@@ -25,24 +25,45 @@ def convert_object_id(data):
     else:
         return data
 
-ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
+# Load environment variables
+load_dotenv()
+
+# Configuration for different environments
+ENVIRONMENT = os.environ.get('ENVIRONMENT', 'development')
+PORT = int(os.environ.get('PORT', 8001))
 
 # MongoDB connection
-mongo_url = os.environ['MONGO_URL']
+if ENVIRONMENT == 'production':
+    mongo_url = os.environ.get('MONGO_URL', 'mongodb+srv://username:password@cluster.mongodb.net/')
+else:
+    mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+
 client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+db = client[os.environ.get('DB_NAME', 'attendance_db')]
 
 # JWT Configuration
 SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'smartworld-secret-key-2024')
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 1440  # 24 hours
+ACCESS_TOKEN_EXPIRE_MINUTES = 60  # 1 hour logout timer
 
 # Security
 security = HTTPBearer()
 
-# Create the main app without a prefix
-app = FastAPI()
+# Create the main app
+app = FastAPI(
+    title="Smartworld Developers Attendance Management System",
+    description="A comprehensive attendance tracking system for teams across multiple sites",
+    version="1.0.0"
+)
+
+# CORS Configuration - Updated for production
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, specify your frontend domain
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
