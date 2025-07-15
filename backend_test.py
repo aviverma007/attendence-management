@@ -512,12 +512,18 @@ class AttendanceSystemTester:
         """Run all backend API tests"""
         print("=" * 80)
         print("SMARTWORLD DEVELOPERS ATTENDANCE SYSTEM - BACKEND API TESTING")
+        print("Testing Updated Features: 1-Hour JWT Expiration, Health Endpoint, Production Config")
         print("=" * 80)
         
         # Test API connectivity first
         if not self.test_api_root():
             print("\n❌ CRITICAL: API is not accessible. Stopping tests.")
             return False
+        
+        print("\n" + "=" * 50)
+        print("TESTING NEW FEATURES")
+        print("=" * 50)
+        self.test_health_endpoint()
         
         print("\n" + "=" * 50)
         print("TESTING DATA INITIALIZATION")
@@ -528,10 +534,11 @@ class AttendanceSystemTester:
             print("\n❌ CRITICAL: Authentication failed. Stopping tests.")
             return False
         
+        # Test JWT token expiration after login
         print("\n" + "=" * 50)
-        print("TESTING DATA INITIALIZATION")
+        print("TESTING JWT TOKEN CONFIGURATION")
         print("=" * 50)
-        self.test_init_data()
+        self.test_jwt_token_expiration()
         
         print("\n" + "=" * 50)
         print("TESTING SITES AND TEAMS")
