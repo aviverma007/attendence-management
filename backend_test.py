@@ -403,7 +403,58 @@ class AttendanceSystemTester:
             self.log_test("Site Attendance Stats", False, f"Request error: {str(e)}")
             return False
     
-    def test_get_current_user_info(self):
+    def test_health_endpoint(self):
+        """Test GET /api/health - Health check endpoint"""
+        try:
+            response = self.session.get(f"{self.base_url}/health")
+            if response.status_code == 200:
+                data = response.json()
+                if "status" in data:
+                    self.log_test("Health Endpoint", True, f"Health check successful: {data.get('status', 'unknown')}")
+                    return True
+                else:
+                    self.log_test("Health Endpoint", False, "Health endpoint missing status field", data)
+                    return False
+            else:
+                self.log_test("Health Endpoint", False, f"HTTP {response.status_code}", response.text)
+                return False
+        except Exception as e:
+            self.log_test("Health Endpoint", False, f"Request error: {str(e)}")
+            return False
+    
+    def test_jwt_token_expiration(self):
+        """Test JWT token expiration - should be 1 hour (3600 seconds)"""
+        try:
+            if not self.auth_token:
+                self.log_test("JWT Token Expiration", False, "No auth token available for testing")
+                return False
+            
+            # Decode JWT token without verification to check expiration
+            try:
+                decoded = jwt.decode(self.auth_token, options={"verify_signature": False})
+                exp_timestamp = decoded.get('exp')
+                iat_timestamp = decoded.get('iat')
+                
+                if exp_timestamp and iat_timestamp:
+                    token_duration = exp_timestamp - iat_timestamp
+                    expected_duration = 3600  # 1 hour in seconds
+                    
+                    if token_duration == expected_duration:
+                        self.log_test("JWT Token Expiration", True, f"Token expiration correctly set to 1 hour ({token_duration} seconds)")
+                        return True
+                    else:
+                        self.log_test("JWT Token Expiration", False, f"Token expiration is {token_duration} seconds, expected {expected_duration} seconds")
+                        return False
+                else:
+                    self.log_test("JWT Token Expiration", False, "Token missing exp or iat claims", decoded)
+                    return False
+            except jwt.DecodeError as e:
+                self.log_test("JWT Token Expiration", False, f"Failed to decode JWT token: {str(e)}")
+                return False
+                
+        except Exception as e:
+            self.log_test("JWT Token Expiration", False, f"Error testing token expiration: {str(e)}")
+            return False
         """Test GET /api/me - Get current user info"""
         try:
             response = self.session.get(f"{self.base_url}/me")
